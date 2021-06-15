@@ -6,7 +6,7 @@ namespace RabbitMQPipline
     {
         static void Main(string[] args)
         {
-            Startup.Start();
+            new Startup().Run(args);
         }
     }
 }

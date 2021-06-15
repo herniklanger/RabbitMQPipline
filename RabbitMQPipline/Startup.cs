@@ -1,16 +1,21 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RabbitMQ.Client;
+using System;
+using System.Collections.Generic;
 
 namespace RabbitMQPipline
 {
-    public class Startup
+    public class Startup : Start
     {
-        private Startup()
-        {
 
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<List<IBasicProperties>>();
         }
-        public static void Start()
-        {
 
+        internal override void StartServices(IServiceProvider provider)
+        {
+            throw new NotImplementedException();
         }
     }
 }

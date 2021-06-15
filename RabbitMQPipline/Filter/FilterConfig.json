@@ -1,0 +1,12 @@
+
+[
+  {
+    "FilterName": "Auth",
+    "TaksRequerd": false
+  },
+  {
+    "FilterName": "Inrich",
+    "TaksRequerd": true,
+    "Tags": [ "T1", "T2" ]
+  }
+]
