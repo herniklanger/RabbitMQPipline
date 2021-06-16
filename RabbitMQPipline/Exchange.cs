@@ -1,6 +1,6 @@
 ﻿namespace RabbitMQPipline
 {
-    public class Exchanges
+    public class Exchange
     {
         public string FromName {get; set;}
         public string ToName {get; set;}

@@ -13,9 +13,5 @@ namespace RabbitMQPipline
             services.AddScoped<List<IBasicProperties>>();
         }
 
-        internal override void StartServices(IServiceProvider provider)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

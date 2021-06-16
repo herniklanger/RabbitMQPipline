@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQPipline.Filter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,17 +14,18 @@ namespace RabbitMQPipline
     {
         public IConnection Connection { get; set; }
         public List<IModel> Models { get; set; }
-        List<Exchanges> exchanges { get; set; }
+        List<Exchange> _exchanges { get; set; }
         IServiceScopeFactory _scopeProvider { get; set; }
-        public RabbitMQLisener(ConnectionFactory factory, List<Exchanges> exchanges, IServiceScopeFactory serviceProvider)
+        public RabbitMQLisener(ConnectionFactory factory, List<Exchange> exchanges, IServiceScopeFactory serviceProvider)
         {
-            Connection = factory.CreateConnection();
             Models = new List<IModel>();
-            exchanges = exchanges;
+            Connection = factory.CreateConnection();
+            _exchanges = exchanges;
+            _scopeProvider = serviceProvider;
         }
         public void Connect()
         {
-            foreach (Exchanges exchanges in exchanges)
+            foreach (Exchange exchanges in _exchanges)
             {
                 IModel channel = Connection.CreateModel();
                 Models.Add(channel);
@@ -36,16 +38,27 @@ namespace RabbitMQPipline
                 {
                     using(IServiceScope s = _scopeProvider.CreateScope())
                     {
-                        var Collection = s.ServiceProvider.GetService<IServiceCollection>();
-                        Collection.AddSingleton(ea.BasicProperties);
-                        Collection.AddSingleton(ea);
-
+                        var container = s.ServiceProvider.GetService<MessageContainer>();
+                        container.Message = ea;
+                        container.Heatter = ea.BasicProperties;
+                        s.ServiceProvider.GetService<List<IFilter>>().RemoveAll(x => {
+                            if (!x.Settings.TaksRequerd)
+                            {
+                                return false;
+                            }
+                            if(null != x.Settings.Tags.Find(y => ((string[])ea.BasicProperties.Headers["Filter"]).Contains(y)))
+                            {
+                                return false;
+                            }
+                            Console.WriteLine(x.Settings.FilterName);
+                            return true;
+                        });
                     }
                     Console.WriteLine("Message resived Event: " + exchanges.FromName);
 
                 };
                 channel.BasicConsume(queueName, true, consumer);
-        }
+            }
         }
         public void Dispose()
         {

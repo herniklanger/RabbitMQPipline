@@ -1,11 +1,8 @@
 
 [
   {
-    "FromName": "",
-    "ToName": "",
-    "ExchangeType" : ""  
-  },
-  {
-
+    "FromName": "Test",
+    "ToName": "TestResult",
+    "ExchangeType": "fanout"
   }
 ]
