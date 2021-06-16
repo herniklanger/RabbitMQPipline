@@ -38,25 +38,28 @@ namespace RabbitMQPipline
                 {
                     using(IServiceScope s = _scopeProvider.CreateScope())
                     {
-                        var container = s.ServiceProvider.GetService<MessageContainer>();
-                        container.Message = ea;
-                        container.Heatter = ea.BasicProperties;
-                        foreach (IFilter filter in s.ServiceProvider.GetService<List<IFilter>>())
-                        {
-                            if (!filter.Settings.TaksRequerd)
-                            {
-                                filter.Run();
-                            }
-                            if(null != filter.Settings.Tags.Find(y => ((string[])ea.BasicProperties.Headers["Filter"]).Contains(y)))
-                            {
-                                filter.Run();
-                            }
-                        }
+                        RunFilters(ea, s);
                     }
                     Console.WriteLine("Message resived Event: " + exchanges.FromName);
 
                 };
                 channel.BasicConsume(queueName, true, consumer);
+            }
+        }
+        void RunFilters(BasicDeliverEventArgs ea, IServiceScope s)
+        {
+            var container = s.ServiceProvider.GetService<MessageContainer>();
+            container.Message = ea;
+            container.Heatter = ea.BasicProperties;
+            foreach (IFilter filter in s.ServiceProvider.GetService<List<IFilter>>())
+            {
+                if (!filter.Settings.TaksRequerd)
+                {
+                    filter.Run();
+                }else if(null != filter.Settings.Tags.Find(y => ((string[])ea.BasicProperties.Headers["Filter"]).Contains(y)))
+                {
+                    filter.Run();
+                }
             }
         }
         public void Dispose()

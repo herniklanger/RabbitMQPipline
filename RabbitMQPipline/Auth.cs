@@ -14,10 +14,9 @@ namespace RabbitMQPipline
         public IServiceProvider service { get; set; }
 
         //If it return false it will end
-        public bool Run()
+        public void Run()
         {
             Console.WriteLine("Auth message");
-            return true;
         }
     }
 }

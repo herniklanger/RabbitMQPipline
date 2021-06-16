@@ -10,6 +10,6 @@ namespace RabbitMQPipline.Filter
     {
         IServiceProvider service { get; set; }
         FilterSettings Settings { get; set; }
-        public bool Run();
+        public void Run();
     }
 }
