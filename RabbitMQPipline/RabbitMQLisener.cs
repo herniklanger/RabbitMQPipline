@@ -41,18 +41,17 @@ namespace RabbitMQPipline
                         var container = s.ServiceProvider.GetService<MessageContainer>();
                         container.Message = ea;
                         container.Heatter = ea.BasicProperties;
-                        s.ServiceProvider.GetService<List<IFilter>>().RemoveAll(x => {
-                            if (!x.Settings.TaksRequerd)
+                        foreach (IFilter filter in s.ServiceProvider.GetService<List<IFilter>>())
+                        {
+                            if (!filter.Settings.TaksRequerd)
                             {
-                                return false;
+                                filter.Run();
                             }
-                            if(null != x.Settings.Tags.Find(y => ((string[])ea.BasicProperties.Headers["Filter"]).Contains(y)))
+                            if(null != filter.Settings.Tags.Find(y => ((string[])ea.BasicProperties.Headers["Filter"]).Contains(y)))
                             {
-                                return false;
+                                filter.Run();
                             }
-                            Console.WriteLine(x.Settings.FilterName);
-                            return true;
-                        });
+                        }
                     }
                     Console.WriteLine("Message resived Event: " + exchanges.FromName);
 

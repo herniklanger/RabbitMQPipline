@@ -39,7 +39,7 @@ namespace RabbitMQPipline
                         .Where(p => typeof(IFilter).IsAssignableFrom(p) && !p.IsInterface).ToList();
                     foreach(var type in typs)
                     {
-                        IFilter filter = (IFilter)sp.GetRequiredService(type);
+                        IFilter filter = (IFilter)Activator.CreateInstance(type);
                         filter.Settings = filterSettings.Find(x => x.FilterName == type.Name);
                         if (filter.Settings != null)
                         {

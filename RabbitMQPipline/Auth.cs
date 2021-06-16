@@ -11,11 +11,8 @@ namespace RabbitMQPipline
     class Auth : IFilter
     {
         public FilterSettings Settings { get; set; }
-        public BasicDeliverEventArgs Message { get; set; }
-        public Auth(BasicDeliverEventArgs message)
-        {
-            Message = message;
-        }
+        public IServiceProvider service { get; set; }
+
         //If it return false it will end
         public bool Run()
         {
